@@ -4,7 +4,7 @@
     <div align= "center"> 
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 자기소개 </h2>  
     <div style="font-weight: 500; font-size: 15px; text-align: center; color: #282d33;"> 🖥️ 홍익대학교 컴퓨터공학과 23학번 이주희</li></br></li></br></li>2024년 2학기</li></br></li>👩‍💻 GDSC 프로젝트 트랙 MUGOU 프론트엔드</br><a href="https://mgu-yulliy-web.vercel.app/login">MUGOU 링크</a>
-    </li></br></li>👩‍💻 주희넷(포트폴리오 연습용 사이트) 개발</li></br></li></br></li>2025년 겨울 방학</li></br></li>🥁 홍익대학교 밴드 학회 큰소리 웹사이트 프론트엔드</li></br></li>🗺️ 홍익대학교 편의 시설 지도 사이트 프론트엔드</li></br></li>💌 줍줍 앱 IOS 파트</li>  </div> 
+    </li></br></li>👩‍💻 주희넷(포트폴리오 연습용 사이트) 개발</br><a href="https://web-practice-inky.vercel.app">주희넷</a></li></br></li></br></li>2025년 겨울 방학</li></br></li>🥁 홍익대학교 밴드 학회 큰소리 웹사이트 프론트엔드</br><a href="https://keun-develop.vercel.app">큰소리 개발 페이지</a></li></br></li>🗺️ 홍익대학교 편의 시설 지도 사이트 프론트엔드</br><a href="https://team1-web.vercel.app">혼비니</a></li></br></li>💌 줍줍 앱 IOS 파트</li>  </div> 
     </div>
     <div align= "center">
     <h2 style="border-bottom: 1px solid #d8dee4; color: #282d33;"> 🛠️ Tech Stacks </h2> <br> 
