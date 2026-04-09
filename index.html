@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식물 고해상도 이미지 뷰어</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2d5a27;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #4a7c59;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 3px dashed #81c784;
+            border-radius: 10px;
+            padding: 40px;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: #f0f8f0;
+            border-color: #4caf50;
+        }
+
+        .upload-area.dragover {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #81c784;
+            margin-bottom: 20px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(45deg, #4caf50, #81c784);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .plant-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .plant-image:hover {
+            transform: scale(1.05);
+        }
+
+        .image-info {
+            padding: 20px;
+        }
+
+        .image-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d5a27;
+            margin-bottom: 8px;
+        }
+
+        .image-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-image {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .sample-plants {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-area {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 식물 고해상도 이미지 뷰어</h1>
+            <p>아름다운 식물들을 고화질로 감상하세요</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🌱</div>
+                <h3>식물 이미지를 여기에 드래그하거나 클릭하여 업로드하세요</h3>
+                <p style="margin: 15px 0; color: #666;">PNG, JPG, JPEG 파일을 지원합니다</p>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    파일 선택하기
+                </button>
+                <input type="file" id="fileInput" multiple accept="image/*">
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="clearGallery()">갤러리 초기화</button>
+            <button class="control-btn" onclick="loadSamplePlants()">샘플 식물 로드</button>
+            <button class="control-btn" onclick="downloadAll()">모든 이미지 다운로드</button>
+        </div>
+
+        <div class="gallery" id="gallery">
+            <!-- 이미지들이 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <div class="close-btn" onclick="closeFullscreen()">&times;</div>
+        <img class="fullscreen-image" id="fullscreenImage" alt="Full resolution plant image">
+    </div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+
+        // 파일 업로드 이벤트 리스너
+        fileInput.addEventListener('change', handleFiles);
+
+        // 드래그 앤 드롭 기능
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles({ target: { files } });
+        }
+
+        function handleFiles(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    displayImage(file);
+                }
+            });
+        }
+
+        function displayImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageCard = createImageCard(e.target.result, file.name, file);
+                gallery.appendChild(imageCard);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function createImageCard(src, name, file) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            const dimensions = getImageDimensions(src);
+            
+            card.innerHTML = `
+                <div class="image-container" onclick="openFullscreen('${src}')">
+                    <img src="${src}" alt="${name}" class="plant-image">
+                </div>
+                <div class="image-info">
+                    <div class="image-name">${name}</div>
+                    <div class="image-details">
+                        크기: ${fileSize} MB<br>
+                        타입: ${file.type}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function getImageDimensions(src) {
+            const img = new Image();
+            img.onload = function() {
+                console.log(`이미지 크기: ${this.width} x ${this.height}px`);
+            };
+            img.src = src;
+        }
+
+        function openFullscreen(src) {
+            fullscreenImage.src = src;
+            fullscreenOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreen() {
+            fullscreenOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function clearGallery() {
+            gallery.innerHTML = '';
+        }
+
+        function loadSamplePlants() {
+            // 샘플 식물 이미지 URLs (고해상도)
+            const sampleImages = [
+                {
+                    name: '몬스테라 델리시오사',
+                    url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center',
+                    description: '대형 잎사귀가 특징인 열대 식물'
+                },
+                {
+                    name: '피들 리프 피그',
+                    url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=600&fit=crop&crop=center',
+                    description: '바이올린 모양의 잎이 아름다운 식물'
+                },
+                {
+                    name: '스네이크 플랜트',
+                    url: 'https://images.unsplash.com/photo-1509423350716-97f2360af2e4?w=800&h=600&fit=crop&crop=center',
+                    description: '관리가 쉬운 공기정화 식물'
+                },
+                {
+                    name: '알로카시아',
+                    url: 'https://images.unsplash.com/photo-1536882240095-0379873feb4e?w=800&h=600&fit=crop&crop=center',
+                    description: '화살 모양의 독특한 잎을 가진 식물'
+                },
+                {
+                    name: '팟토스',
+                    url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center',
+                    description: '초보자도 키우기 쉬운 덩굴식물'
+                },
+                {
+                    name: '칼라테아',
+                    url: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop&crop=center',
+                    description: '무늬가 아름다운 관엽식물'
+                }
+            ];
+
+            sampleImages.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                
+                card.innerHTML = `
+                    <div class="image-container" onclick="openFullscreen('${plant.url}')">
+                        <img src="${plant.url}" alt="${plant.name}" class="plant-image" loading="lazy">
+                    </div>
+                    <div class="image-info">
+                        <div class="image-name">${plant.name}</div>
+                        <div class="image-details">${plant.description}</div>
+                    </div>
+                `;
+                
+                gallery.appendChild(card);
+            });
+        }
+
+        function downloadAll() {
+            const images = gallery.querySelectorAll('.plant-image');
+            images.forEach((img, index) => {
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = `plant_${index + 1}.png`;
+                link.click();
+            });
+        }
+
+        // 키보드 이벤트 (ESC로 전체화면 닫기)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreen();
+            }
+        });
+
+        // 전체화면 오버레이 클릭시 닫기
+        fullscreenOverlay.addEventListener('click', function(e) {
+            if (e.target === fullscreenOverlay) {
+                closeFullscreen();
+            }
+        });
+
+        // 페이지 로드 시 샘플 식물 로드
+        window.addEventListener('load', function() {
+            setTimeout(loadSamplePlants, 500);
+        });
+    </script>
+</body>
+</html>
